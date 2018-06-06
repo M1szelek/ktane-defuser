@@ -1,6 +1,7 @@
 <template>
     <div>
         {{ currentQuestion }}
+        <button v-for="(answer,key) in currentAnswers">{{ key }}</button>
     </div>
 </template>
 
@@ -9,7 +10,8 @@
         name: "Wires",
         data(){
             return {
-                decisions: '3',
+                decisions: '3,no,yes',
+                currentAnswers: [],
                 decisionTree: {
                     question: 'How many wires?',
                     answers: {
@@ -17,22 +19,22 @@
                             question: 'No red wires?',
                             answers: {
                                 'yes': {
-                                    solution: 'Cut the second wire'
+                                    question: 'Cut the second wire'
                                 },
                                 'no': {
                                     question: 'Last wire is white?',
                                     answers: {
                                         'yes': {
-                                            solution: 'Cut the last wire'
+                                            question: 'Cut the last wire'
                                         },
                                         'no': {
                                             question: 'More than one blue wire?',
                                             answers: {
                                                 'yes': {
-                                                    solution: 'Cut the last blue wire'
+                                                    question: 'Cut the last blue wire'
                                                 },
                                                 'no': {
-                                                    solution: 'Cut the last wire'
+                                                    question: 'Cut the last wire'
                                                 }
                                             }
                                         }
@@ -59,28 +61,19 @@
                     return this.decisionTree.question;
                 }else{
                     let decisions = this.decisions.split(',');
-
                     let currentAnswers = this.decisionTree.answers;
-                    console.log(currentAnswers);
                     let result = currentAnswers[decisions[0]].question;
-
-                    console.log(result);
-
+                    currentAnswers = currentAnswers[decisions[0]].answers;
+                    this.currentAnswers = currentAnswers;
+                    decisions.shift();
                     decisions.forEach((decision) => {
-                        if(currentAnswers.solution){
-                            return currentAnswers.solution
-                        }else{
-                            currentAnswers = currentAnswers.answers[decision];
-                            result = currentAnswers.question;
-                        }
+                            result = currentAnswers[decision].question;
+                            currentAnswers = currentAnswers[decision].answers;
+                            this.currentAnswers = currentAnswers;
                     });
-
                     return result;
                 }
 
-            },
-            answers(){
-                return Object.keys(this.descisionTree.answers);
             }
         },
         methods:{
